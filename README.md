@@ -130,3 +130,78 @@ public class StringCheese {
     }
 }
 ```
+
+## 无情的增量
+```java
+public class Increment {
+    public static void main(String[] args) {
+        int j = 0;
+        for (int i = 0; i < 100; i++) {
+            j = j++;
+        }
+        System.out.println(j);
+    }
+}
+```
+### 分析
+当++操作符被置于一个变量值之后时，其作用就是一个后缀增量操作符,表达式j++的值等于j在执行增量操作之前的初始值。因此，前面提到的赋值语句首先保存j的值，然后将j设置为其值加1，最后将j复位到它的初始值。换句话说，这个赋值操作等价于下面的语句序列：
+```
+int temp = j;
+j = j + 1;
+j = temp;
+
+```
+### 类似问题
+```java
+public class Demo {  
+  public static void main(String[] args) {  
+      int j = 0;  
+      j= j++;  
+      System.out.println(j);  
+  }  
+}
+```
+### 建议
+不要在单个的表达式中对相同的变量赋值超过一次。
+
+
+## 优柔寡断
+```java
+public class HelloGoodbye {
+    public static void main(String[] args){
+        System.out.println(decision());
+        
+        
+
+    }
+
+    private static boolean decision() {
+        try{
+            return true;
+        }
+        finally{
+            return false;
+        }
+    }
+}
+```
+## 分析
+在一个try-finally语句中，finally语句块总是在控制权离开try语句块时执行的。无论try语句块是正常结束的，还是意外结束的，情况都是如此。
+## 建议
+每一个finally语句块都应该正常结束，除非抛出的是不受检查的异常。千万不要用一个return、break、continue或throw来退出一个finally语句块，并且千万不要允许将一个受检查的异常传播到一个finally语句块之外去。
+## 扩展
+```java
+public class HelloGoodbye {  
+  public static void main(String[] args){  
+      try{  
+          System.out.println("Hello,World!");  
+          System.exit(0);  
+      }finally{  
+          System.out.println("Goodbye,world!");  
+      }  
+    }  
+}
+```
+
+## 分析
+不论try语句块的执行是正常地还是意外地结束，finally语句块确实都会执行。然而在这个程序中，try语句块根本就没有结束其执行过程。System.exit方法将停止当前线程和所有其他当场死亡的线程。finally子句的出现并不能给予线程继续去执行的特殊权限。System.exit将立即停止所有的程序线程，它并不会使finally语句块得到调用，但是它在停止VM之前会执行关闭挂钩操作。当VM被关闭时，请使用关闭挂钩来终止外部资源。通过调用System.halt可以在不执行关闭挂钩的情况下停止VM，但是这个方法很少使用。
